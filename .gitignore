@@ -1,0 +1,19 @@
+#.gitignore
+
+# File môi trường chứa thông tin nhạy cảm
+book_management/.env
+book_management/.venv/
+book_management/venv*/
+
+# Các file tạm hoặc log
+book_management/**/*.log
+book_management/logs/
+book_management/tmp/
+book_management/.cache/
+
+# Bỏ qua file biên dịch Python
+book_management/**/*.py[cod]
+book_management/__pycache__/
+
+# File migrations
+book_management/migrations/

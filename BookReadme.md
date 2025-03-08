@@ -88,18 +88,24 @@ bookstore_management/
 │   ├── constants.py            # Hằng số dùng chung (quy định, tên file, v.v.)
 │   ├── models/                 # Mô hình dữ liệu
 │   │   ├── __init__.py
-│   │   ├── user.py             # Model User (người dùng)
+│   │   ├── customer.py         # Model Customer (Thông tin khách hàng)
 │   │   ├── book.py             # Model Book (sách)
+│   │   ├── book_import.py      # Model Book Import (lịch sử nhập sách)
+│   │   ├── cate.py             # Model Cate (loại sách)
+│   │   ├── log.py              # Model Log (log)
 │   │   ├── order.py            # Model Order (đơn hàng)
-│   │   └── failed_login.py     # Model FailedLogin (theo dõi đăng nhập sai)
+│   │   ├── order_detail.py     # Model Order Detail (chi tiết đơn hàng)
+│   │   ├── sale.py             # Model Sale (Lịch sử bán hàng)
+│   │   ├── setting.py          # Model Setting (Cấu hình hệ thống)
+│   │   └── account.py          # Model Account (Tài khoản)
 │   ├── routes/                 # Các tuyến đường
 │   │   ├── __init__.py
 │   │   ├── auth.py             # Đăng nhập/đăng ký
 │   │   ├── book.py             # Nhập/bán/quản lý sách
 │   │   ├── order.py            # Đặt sách online
-│   │   ├── report.py           # Thống kê và báo cáo
+│   │   ├── report.py           # Thống kê và báo cáo ( nâng cấp sau )
 │   │   ├── settings.py         # Thay đổi quy định
-│   │   └── dashboard.py        # Dashboard
+│   │   └── dashboard.py        # Dashboard ( nâng cấp sau )
 │   ├── templates/              # HTML templates
 │   │   ├── base.html           # Template cơ sở
 │   │   ├── auth/               # Đăng nhập/đăng ký
@@ -228,3 +234,87 @@ Liên hệ qua email: `your-email@example.com` hoặc tạo issue trên reposito
 - Các yêu cầu cũ (bảo mật, tác vụ ngầm, v.v.) được giữ nguyên và tích hợp hài hòa với yêu cầu mới.
 
 Nếu bạn cần điều chỉnh hoặc bổ sung thêm chi tiết vào cây thư mục hoặc nội dung, hãy cho tôi biết nhé!
+
+
+
+## Tính năng chính
+
+### Quản lý người dùng
+- Đăng ký, đăng nhập, phân quyền (admin, quản lý kho, nhân viên, khách hàng).
+- Gửi email xác nhận bất đồng bộ sau khi đăng ký.
+
+### Quản lý sách
+- **Nhập sách** (quản lý kho):
+  - Biểu mẫu nhập sách với các trường: mã sách, tên sách, thể loại, số lượng, giá.
+  - Quy định: Số lượng nhập tối thiểu 150, chỉ nhập khi tồn kho dưới 300.
+  - Thêm, xóa, cập nhật, tìm kiếm sách (dành cho quản lý).
+- **Bán sách** (nhân viên):
+  - Biểu mẫu bán sách hỗ trợ quét mã vạch để nhập mã sách.
+  - Cập nhật tồn kho sau khi bán.
+
+### Đặt sách online
+- **Khách hàng**:
+  - Đặt sách qua biểu mẫu online, chọn thanh toán tại quầy hoặc trực tuyến.
+  - Giao hàng miễn phí nếu thanh toán trực tuyến.
+  - Quy định: Đơn thanh toán tại quầy bị hủy sau 48 tiếng nếu không nhận.
+- **Tác vụ ngầm**: Gửi email thông báo khi đặt hàng và tự động hủy đơn sau 48 tiếng (nếu áp dụng).
+
+### Thống kê và báo cáo (quản trị)
+- **Doanh thu**:
+  - Bảng và biểu đồ (Chart.js) theo tháng, phân loại theo thể loại sách.
+- **Tần suất bán sách**:
+  - Thống kê số lần bán của từng đầu sách theo tháng.
+- Xuất báo cáo dưới dạng CSV (chạy ngầm).
+
+### Thay đổi quy định (quản trị)
+- Điều chỉnh:
+  - Số lượng nhập tối thiểu.
+  - Số lượng tồn tối thiểu trước khi nhập.
+  - Thời gian hủy đơn hàng nếu không nhận (mặc định 48 tiếng).
+- Lưu thay đổi vào `constants.py` hoặc database.
+
+### Tác vụ ngầm
+- Gửi email thông báo (đặt hàng, hủy đơn).
+- Tạo báo cáo CSV.
+- Kiểm tra và hủy đơn hàng tự động sau thời gian quy định.
+
+### Ghi log
+- Ghi lại hành động: nhập sách, bán sách, đặt hàng, thay đổi quy định.
+- Log các sự kiện bảo mật (tấn công, vượt giới hạn yêu cầu).
+
+### Dashboard
+- Tổng quan: số sách tồn kho, đơn hàng, doanh thu, hoạt động gần đây.
+
+
+
+bookstore_management/
+│
+├── app/                        # Ứng dụng Flask chính
+│   ├── __init__.py             # Khởi tạo Flask
+│   ├── constants.py            # Hằng số dùng chung (quy định, tên file, v.v.)
+│   ├── models/                 # Mô hình dữ liệu
+│   │   ├── __init__.py
+│   │   ├── customer.py         # Model Customer (Thông tin khách hàng)
+│   │   ├── book.py             # Model Book (sách)
+│   │   ├── book_import.py      # Model Book Import (lịch sử nhập sách)
+│   │   ├── cate.py             # Model Cate (loại sách)
+│   │   ├── log.py              # Model Log (log)
+│   │   ├── order.py            # Model Order (đơn hàng)
+│   │   ├── order_detail.py     # Model Order Detail (chi tiết đơn hàng)
+│   │   ├── sale.py             # Model Sale (Lịch sử bán hàng)
+│   │   ├── setting.py          # Model Setting (Cấu hình hệ thống)
+│   │   └── account.py          # Model Account (Tài khoản)
+│   ├── routes/                 # Các tuyến đường
+│   ├── templates/              # HTML templates
+│   ├── static/                 # CSS, JS, hình ảnh
+│   ├── forms/                  # Biểu mẫu
+│   ├── utils/                  # Hàm tiện ích
+│   └── api/                    # RESTful API (dự kiến)
+├── migrations/                 # Quản lý thay đổi database
+├── tests/                      # Unit tests
+├── logs/                       # File log
+├── config.py                   # Cấu hình môi trường
+├── requirements.txt            # Danh sách thư viện
+├── .env                        # Biến môi trường
+├── app.py                      # File chạy Flask
+└── README.md                   # Tài liệu này
